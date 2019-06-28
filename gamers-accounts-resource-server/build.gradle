@@ -1,0 +1,22 @@
+plugins {
+    id 'org.springframework.boot' version '2.0.9.RELEASE'
+}
+
+bootJar {
+    launchScript()
+}
+
+description = 'gamers-accounts-resource-server'
+
+dependencies {
+    compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework.boot:spring-boot-starter-security"
+    compile "org.springframework.boot:spring-boot-starter-thymeleaf"
+    compile "org.springframework.boot:spring-boot-starter-actuator"
+    compile "org.springframework.boot:spring-boot-starter-data-redis"
+    compile "org.springframework.session:spring-session-data-redis"
+    compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect"
+    compile "org.springframework.cloud:spring-cloud-starter-netflix-zuul"
+
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+}
