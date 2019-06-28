@@ -1,0 +1,28 @@
+description = "gamers-core"
+
+dependencies {
+    compile "org.springframework:spring-aspects"
+    compile "org.springframework:spring-context-support"
+    compile "org.springframework.data:spring-data-jpa"
+    compile "org.springframework.security:spring-security-core"
+    compile "org.hibernate:hibernate-validator"
+    compile "org.hibernate:hibernate-entitymanager"
+    compile "org.hsqldb:hsqldb"
+    compile "org.jadira.usertype:usertype.core:${usertypeVersion}"
+    compile "com.fasterxml.jackson.core:jackson-databind"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-joda"
+    compile "joda-time:joda-time"
+    compile "com.google.guava:guava"
+    compile "org.apache.commons:commons-lang3"
+    compile "javax.mail:mail:${javaMailVersion}"
+    compile "org.freemarker:freemarker"
+
+    testCompile "junit:junit"
+    testCompile "org.mockito:mockito-core"
+    testCompile "org.hamcrest:hamcrest-all"
+    testCompile "org.springframework:spring-test"
+}
+
+if(project.hasProperty('jpaSchema')) {
+    apply from: 'jpaSchema.gradle'
+}

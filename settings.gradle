@@ -1,3 +1,4 @@
 rootProject.name = 'gamers-accounts'
 include 'gamers-accounts-resource-server'
+include 'gamers-accounts-core'
 
