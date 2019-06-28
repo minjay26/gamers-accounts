@@ -1,2 +1,35 @@
 server:
   port: 2601
+
+logging:
+  path: logs/
+  level:
+    root: INFO
+
+spring:
+  profiles.active: mysql
+  jpa:
+    open-in-view: true
+    show-sql: true
+    properties:
+      jadira.usertype.autoRegisterUserTypes: true
+      jadira.usertype.databaseZone: jvm
+      jadira.usertype.javaZone: jvm
+    hibernate:
+      naming:
+        implicit-strategy: org.minjay.gamers.accounts.data.jpa.CustomImplicitNamingStrategy
+      ddl-auto: update
+      use-new-id-generator-mappings: false
+
+---
+spring:
+  profiles: mysql
+  datasource:
+    driver-class-name: ${datasource.driver-class-name:com.mysql.jdbc.Driver}
+    url: ${datasource.url:jdbc:mysql://localhost:3306/gamers_accounts?autoReconnect=true&useUnicode=true&characterEncoding=UTF8&serverTimezone=Asia/Shanghai}
+    username: ${datasource.username:root}
+    password: ${datasource.password:111111}
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5Dialect
+    hibernate:
+      ddl-auto: update
