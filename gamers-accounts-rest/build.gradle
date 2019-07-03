@@ -1,0 +1,22 @@
+description = "gamers-accounts-rest"
+
+dependencies {
+    compile project(':gamers-accounts-core')
+
+    compile "org.springframework:spring-webmvc"
+    compile "com.fasterxml.jackson.core:jackson-databind"
+    compile "javax.servlet:javax.servlet-api"
+    compile "org.springframework.security:spring-security-config"
+    compile "commons-beanutils:commons-beanutils"
+    compile "commons-validator:commons-validator:${commonsValidatorVersion}"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-hibernate5"
+
+    testCompile "junit:junit"
+    testCompile "org.mockito:mockito-core"
+    testCompile "org.hamcrest:hamcrest-all"
+    testCompile "org.springframework:spring-test"
+    testCompile "org.springframework.security:spring-security-test"
+    testCompile "com.jayway.jsonpath:json-path"
+    testCompile "com.jayway.jsonpath:json-path-assert"
+    
+}
