@@ -18,9 +18,9 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-actuator"
     compile "org.springframework.security.oauth:spring-security-oauth2"
     compile('com.auth0:java-jwt:3.4.0')
+    compile('cn.tendata.security:tendata-security-jwt:2.0.0')
     compile "org.springframework.security:spring-security-jwt"
     compile "org.springframework.boot:spring-boot-starter-data-redis"
-    compile "org.springframework.session:spring-session-data-redis"
     compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect"
     compile "mysql:mysql-connector-java"
     compile "org.springframework.cloud:spring-cloud-starter-netflix-zuul"

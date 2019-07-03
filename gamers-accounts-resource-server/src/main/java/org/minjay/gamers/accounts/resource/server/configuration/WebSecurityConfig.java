@@ -81,12 +81,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	protected UserDetailsService userDetailsService() {
 		return new JwtUserService();
 	}
-	
+
 	@Bean("jwtUserService")
 	protected JwtUserService jwtUserService() {
 		return new JwtUserService();
 	}
-	
+
 	@Bean
 	protected JsonLoginSuccessHandler jsonLoginSuccessHandler() {
 		return new JsonLoginSuccessHandler(jwtUserService());

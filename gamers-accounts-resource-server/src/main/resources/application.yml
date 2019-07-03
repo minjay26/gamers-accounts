@@ -23,6 +23,7 @@ spring:
   redis:
     host: localhost
     port: 6379
+    password: 123456
 
 ---
 spring:
@@ -31,7 +32,7 @@ spring:
     driver-class-name: ${datasource.driver-class-name:com.mysql.jdbc.Driver}
     url: ${datasource.url:jdbc:mysql://localhost:3306/gamers_accounts?autoReconnect=true&useUnicode=true&characterEncoding=UTF8&serverTimezone=Asia/Shanghai}
     username: ${datasource.username:root}
-    password: ${datasource.password:111111}
+    password: ${datasource.password:123456}
   jpa:
     database-platform: org.hibernate.dialect.MySQL5Dialect
     hibernate:

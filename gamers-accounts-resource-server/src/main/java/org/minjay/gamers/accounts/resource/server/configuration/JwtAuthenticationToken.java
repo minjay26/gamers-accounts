@@ -14,14 +14,14 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
 	private UserDetails principal;
 	private String credentials;
-	private String token;
+	private DecodedJWT token;
 
-	public JwtAuthenticationToken(String token) {
+	public JwtAuthenticationToken(DecodedJWT token) {
 		super(Collections.emptyList());
 		this.token = token;
 	}
 
-	public JwtAuthenticationToken(UserDetails principal, String token, Collection<? extends GrantedAuthority> authorities) {
+	public JwtAuthenticationToken(UserDetails principal, DecodedJWT token, Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
 		this.principal = principal;
 		this.token = token;
@@ -43,7 +43,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 		return principal;
 	}
 
-	public String getToken() {
+	public DecodedJWT getToken() {
 		return token;
 	}
 

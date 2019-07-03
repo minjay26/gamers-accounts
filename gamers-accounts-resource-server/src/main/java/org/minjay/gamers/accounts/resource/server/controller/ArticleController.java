@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ArticleController {
 	
 	@GetMapping("{id}")
-	public String load(@PathVariable Long id) {
+	public String load(@PathVariable Long id,@AuthenticationPrincipal UserDetails user) {
 		return "This is my first blog";
 	}
 	
