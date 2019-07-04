@@ -1,6 +1,7 @@
-package org.minjay.gamers.accounts.resource.server.filter;
+package org.minjay.gamers.accounts.resource.server.authentication.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -17,9 +18,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Map;
 
-public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class UsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    public MyUsernamePasswordAuthenticationFilter() {
+    public UsernamePasswordAuthenticationFilter() {
         super(new AntPathRequestMatcher("/login", "POST"));
     }
 
@@ -34,22 +35,16 @@ public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticati
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
         String body = StreamUtils.copyToString(request.getInputStream(), Charset.forName("UTF-8"));
-        String username = null, password = null;
-        if (StringUtils.hasText(body)) {
-            Map<String, String> map = new ObjectMapper().readValue(body, Map.class);
-            username = map.get("username");
-            password = map.get("password");
+        if (!StringUtils.hasText(body)) {
+            throw new AccessDeniedException("username and password required");
         }
 
-        if (username == null)
-            username = "";
-        if (password == null)
-            password = "";
-        username = username.trim();
+        Map<String, String> map = new ObjectMapper().readValue(body, Map.class);
+        String username = map.get("username");
+        String password = map.get("password");
 
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
                 username, password);
-
         return this.getAuthenticationManager().authenticate(authRequest);
     }
 

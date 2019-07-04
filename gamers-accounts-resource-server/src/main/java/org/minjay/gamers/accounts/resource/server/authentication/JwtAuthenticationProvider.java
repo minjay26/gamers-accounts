@@ -1,30 +1,30 @@
-package org.minjay.gamers.accounts.resource.server.service;
+package org.minjay.gamers.accounts.resource.server.authentication;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.minjay.gamers.accounts.resource.server.configuration.JwtAuthenticationToken;
 import org.minjay.gamers.accounts.security.LoginUser;
+import org.minjay.gamers.accounts.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.www.NonceExpiredException;
+import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
 
+@Component
 public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
     RedisTemplate redisTemplate;
-    private JwtUserService userService;
-
-    public JwtAuthenticationProvider(JwtUserService userService) {
-        this.userService = userService;
-    }
+    @Autowired
+    private UserService userService;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -32,7 +32,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         if (jwt.getExpiresAt().before(Calendar.getInstance().getTime()))
             throw new NonceExpiredException("Token expires");
         String username = jwt.getSubject();
-        LoginUser user = userService.loadUserByUsername(username);
+        UserDetails user = userService.loadUserByUsername(username);
         if (user == null)
             throw new NonceExpiredException("Token expires");
         try {

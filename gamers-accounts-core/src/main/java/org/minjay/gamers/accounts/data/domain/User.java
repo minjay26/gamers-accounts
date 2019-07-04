@@ -16,7 +16,6 @@ public class User extends AbstractEntityAuditable<Long> {
     private String email;
 
     private int loginCount;
-
     private DateTime lastLoginDate;
     private String lastLoginIp;
 

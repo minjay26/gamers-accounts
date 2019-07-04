@@ -4,6 +4,7 @@ dependencies {
     compile "org.springframework:spring-aspects"
     compile "org.springframework:spring-context-support"
     compile "org.springframework.data:spring-data-jpa"
+    compile "org.springframework.data:spring-data-redis"
     compile "org.springframework.security:spring-security-core"
     compile "org.hibernate:hibernate-validator"
     compile "org.hibernate:hibernate-entitymanager"
@@ -13,6 +14,7 @@ dependencies {
     compile "com.fasterxml.jackson.datatype:jackson-datatype-joda"
     compile "joda-time:joda-time"
     compile "com.google.guava:guava"
+    compile('com.auth0:java-jwt:3.4.0')
     compile "org.apache.commons:commons-lang3"
     compile "javax.mail:mail:${javaMailVersion}"
     compile "org.freemarker:freemarker"

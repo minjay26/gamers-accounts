@@ -1,6 +1,7 @@
-package org.minjay.gamers.accounts.resource.server.configuration;
+package org.minjay.gamers.accounts.resource.server.config;
 
-import org.minjay.gamers.accounts.resource.server.filter.MyUsernamePasswordAuthenticationFilter;
+import org.minjay.gamers.accounts.resource.server.authentication.LoginFailureHandler;
+import org.minjay.gamers.accounts.resource.server.authentication.filter.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -8,25 +9,25 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 
-public class JsonLoginConfigurer<T extends JsonLoginConfigurer<T, B>, B extends HttpSecurityBuilder<B>> extends AbstractHttpConfigurer<T, B>  {
+public class AuthenticationConfigurer<T extends AuthenticationConfigurer<T, B>, B extends HttpSecurityBuilder<B>> extends AbstractHttpConfigurer<T, B>  {
 
-	private MyUsernamePasswordAuthenticationFilter authFilter;
+	private UsernamePasswordAuthenticationFilter authFilter;
 
-	public JsonLoginConfigurer() {
-		this.authFilter = new MyUsernamePasswordAuthenticationFilter();
+	public AuthenticationConfigurer() {
+		this.authFilter = new UsernamePasswordAuthenticationFilter();
 	}
 	
 	@Override
 	public void configure(B http) throws Exception {
 		authFilter.setAuthenticationManager(http.getSharedObject(AuthenticationManager.class));
-		authFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
+		authFilter.setAuthenticationFailureHandler(new LoginFailureHandler());
 		authFilter.setSessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy());
 
-		MyUsernamePasswordAuthenticationFilter filter = postProcess(authFilter);
+		UsernamePasswordAuthenticationFilter filter = postProcess(authFilter);
 		http.addFilterAfter(filter, LogoutFilter.class);
 	}
 	
-	public JsonLoginConfigurer<T,B> loginSuccessHandler(AuthenticationSuccessHandler authSuccessHandler){
+	public AuthenticationConfigurer<T,B> loginSuccessHandler(AuthenticationSuccessHandler authSuccessHandler){
 		authFilter.setAuthenticationSuccessHandler(authSuccessHandler);
 		return this;
 	}

@@ -1,10 +1,9 @@
-package org.minjay.gamers.accounts.resource.server.filter;
+package org.minjay.gamers.accounts.resource.server.authentication;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import org.apache.commons.lang3.StringUtils;
-import org.minjay.gamers.accounts.resource.server.configuration.JwtAuthenticationToken;
-import org.minjay.gamers.accounts.resource.server.service.JwtUserService;
+import org.minjay.gamers.accounts.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -30,19 +29,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private RequestMatcher requiresAuthenticationRequestMatcher;
     private List<RequestMatcher> permissiveRequestMatchers;
     private AuthenticationManager authenticationManager;
     @Autowired
-    private JwtUserService jwtUserService;
-
+    private TokenService tokenService;
 
     private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
     private AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
 
-    public JwtAuthenticationFilter() {
+    public TokenAuthenticationFilter() {
         this.requiresAuthenticationRequestMatcher = new RequestHeaderRequestMatcher("x-auth-token");
     }
 
@@ -60,16 +58,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-		if (!requiresAuthentication(request, response)) {
-			filterChain.doFilter(request, response);
-			return;
-		}
+        if (!requiresAuthentication(request, response)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         Authentication authResult = null;
         AuthenticationException failed = null;
         try {
             String token = getToken(request);
             if (StringUtils.isNotBlank(token)) {
-                String jwt = jwtUserService.getJwt(token);
+                String jwt = tokenService.getJwt(token);
                 JwtAuthenticationToken authToken = new JwtAuthenticationToken(JWT.decode(jwt));
                 authResult = this.getAuthenticationManager().authenticate(authToken);
             } else {
