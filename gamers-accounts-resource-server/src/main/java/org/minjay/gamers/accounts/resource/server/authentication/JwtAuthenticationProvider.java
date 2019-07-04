@@ -36,7 +36,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         if (user == null)
             throw new NonceExpiredException("Token expires");
         try {
-            Algorithm algorithm = Algorithm.HMAC256("123456ef");
+            Algorithm algorithm = Algorithm.HMAC256("123456");
             JWTVerifier verifier = JWT.require(algorithm)
                     .withSubject(username)
                     .build();
