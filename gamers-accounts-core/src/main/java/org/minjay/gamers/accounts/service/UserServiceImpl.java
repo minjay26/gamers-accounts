@@ -2,7 +2,7 @@ package org.minjay.gamers.accounts.service;
 
 import org.minjay.gamers.accounts.data.domain.User;
 import org.minjay.gamers.accounts.data.repository.UserRepository;
-import org.minjay.gamers.accounts.security.LoginUser;
+import org.minjay.gamers.security.userdetails.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,7 +24,9 @@ public class UserServiceImpl extends EntityServiceSupport<User, Long, UserReposi
         if (user == null) {
             return null;
         }
-        LoginUser loginUser = new LoginUser(username, user.getPassword(), Arrays.asList(new SimpleGrantedAuthority("a")));
-        return loginUser;
+        LoginUser.LoginUserBuilder builder = new LoginUser.LoginUserBuilder().username(username)
+                .password(user.getPassword())
+                .authorities(Arrays.asList(new SimpleGrantedAuthority("a")));
+        return builder.build();
     }
 }

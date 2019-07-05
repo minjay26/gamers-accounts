@@ -8,6 +8,7 @@ dependencies {
     compile "org.springframework.security:spring-security-core"
     compile "org.hibernate:hibernate-validator"
     compile "org.hibernate:hibernate-entitymanager"
+    compile "org.minjay.gamers:gamers-security:1.0.0"
     compile "org.hsqldb:hsqldb"
     compile "org.jadira.usertype:usertype.core:${usertypeVersion}"
     compile "com.fasterxml.jackson.core:jackson-databind"

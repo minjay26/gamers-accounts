@@ -2,12 +2,15 @@ package org.minjay.gamers.accounts.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.minjay.gamers.security.userdetails.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.UUID;
@@ -26,23 +29,12 @@ public class TokenServiceImpl implements TokenService {
     private RedisTemplate<String, String> redisTemplate;
     @Autowired
     private ValueOperations<String, String> valueOperations;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Override
-    public String generateAndSave(UserDetails userDetails) {
-        String token = UUID.randomUUID().toString();
-        preCheck(userDetails);
-        Algorithm algorithm = Algorithm.HMAC256(jwtSalt);
-        Date date = new Date(System.currentTimeMillis() + tokenTtl * 1000);  //设置1小时后过期
-        String jwt = JWT.create()
-                .withSubject(userDetails.getUsername())
-                .withExpiresAt(date)
-                .withIssuedAt(new Date())
-                .sign(algorithm);
-        String key = "accounts:jwt:" + token;
-        valueOperations.set(key, jwt);
-        redisTemplate.expireAt(key, date);
-        valueOperations.set(TOKEN_REDIS_KEY_PREFIX + userDetails.getUsername(), token);
-        return token;
+    public String generateAndSave(LoginUser loginUser) {
+        return generateOrRefresh(null, loginUser);
     }
 
     @Override
@@ -50,8 +42,41 @@ public class TokenServiceImpl implements TokenService {
         return redisTemplate.opsForValue().get(JWT_REDIS_KEY_PREFIX + token);
     }
 
-    private void preCheck(UserDetails userDetails) {
-        String userTokenKey = TOKEN_REDIS_KEY_PREFIX + userDetails.getUsername();
+    @Async
+    @Override
+    public String refreshToken(String token, LoginUser loginUser) {
+        return generateOrRefresh(token, loginUser);
+    }
+
+    private String generateOrRefresh(String oldToken, LoginUser loginUser) {
+        if (StringUtils.isEmpty(oldToken)) {
+            oldToken = UUID.randomUUID().toString();
+        }
+        preCheck(loginUser);
+
+        Algorithm algorithm = Algorithm.HMAC256(jwtSalt);
+        Date date = new Date(System.currentTimeMillis() + tokenTtl * 1000);
+        String jwt;
+        try {
+            jwt = JWT.create()
+                    .withSubject(objectMapper.writeValueAsString(loginUser))
+                    .withExpiresAt(date)
+                    .withIssuedAt(new Date())
+                    .sign(algorithm);
+        } catch (Exception e) {
+            throw new UnsupportedOperationException();
+        }
+
+        String key = "accounts:jwt:" + oldToken;
+        valueOperations.set(key, jwt);
+        redisTemplate.expireAt(key, date);
+        valueOperations.set(TOKEN_REDIS_KEY_PREFIX + loginUser.getUsername(), oldToken);
+        return oldToken;
+
+    }
+
+    private void preCheck(LoginUser loginUser) {
+        String userTokenKey = TOKEN_REDIS_KEY_PREFIX + loginUser.getUsername();
         if (redisTemplate.hasKey(userTokenKey)) {
             String oldToken = valueOperations.get(userTokenKey);
             String jwtKey = JWT_REDIS_KEY_PREFIX + oldToken;

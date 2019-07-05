@@ -2,6 +2,7 @@ package org.minjay.gamers.accounts.resource.server.authentication;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.minjay.gamers.accounts.service.TokenService;
+import org.minjay.gamers.security.userdetails.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +20,7 @@ import java.util.Date;
 @Component
 public class TokenRefreshSuccessHandler implements AuthenticationSuccessHandler {
 
-    private static final int tokenRefreshInterval = 300;  //刷新间隔5分钟
+    private static final int tokenRefreshInterval = 300;
 
     @Autowired
     private TokenService tokenService;
@@ -29,8 +30,7 @@ public class TokenRefreshSuccessHandler implements AuthenticationSuccessHandler 
                                         Authentication authentication) throws IOException, ServletException {
         DecodedJWT jwt = ((JwtAuthenticationToken) authentication).getToken();
         if (shouldTokenRefresh(jwt.getIssuedAt())) {
-            String newToken = tokenService.generateAndSave((UserDetails) authentication.getPrincipal());
-            response.setHeader("Authorization", newToken);
+            tokenService.refreshToken(request.getParameter("x-auth-token"), (LoginUser) authentication.getPrincipal());
         }
     }
 

@@ -44,13 +44,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         this.requiresAuthenticationRequestMatcher = new RequestHeaderRequestMatcher("x-auth-token");
     }
 
-    @Override
-    public void afterPropertiesSet() {
-        Assert.notNull(authenticationManager, "authenticationManager must be specified");
-        Assert.notNull(successHandler, "AuthenticationSuccessHandler must be specified");
-        Assert.notNull(failureHandler, "AuthenticationFailureHandler must be specified");
-    }
-
     protected String getToken(HttpServletRequest request) {
         return request.getHeader("x-auth-token");
     }
@@ -62,6 +55,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+
         Authentication authResult = null;
         AuthenticationException failed = null;
         try {
@@ -82,9 +76,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                     failed);
             failed = e;
         } catch (AuthenticationException e) {
-            // Authentication failed
             failed = e;
+        } catch (Exception e) {
+            unsuccessfulAuthentication(request, response, failed);
+            return;
         }
+
         if (authResult != null) {
             successfulAuthentication(request, response, filterChain, authResult);
         } else if (!permissiveRequest(request)) {

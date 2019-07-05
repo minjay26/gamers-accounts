@@ -1,9 +1,9 @@
 package org.minjay.gamers.accounts.resource.server.authentication;
 
 import org.minjay.gamers.accounts.service.TokenService;
+import org.minjay.gamers.security.userdetails.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import javax.servlet.ServletException;
@@ -19,7 +19,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-        String token = tokenService.generateAndSave((UserDetails) authentication.getPrincipal());
+        String token = tokenService.generateAndSave((LoginUser) authentication.getPrincipal());
         response.setHeader("x-auth-token", token);
     }
 
