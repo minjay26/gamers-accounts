@@ -25,6 +25,7 @@ public class UserServiceImpl extends EntityServiceSupport<User, Long, UserReposi
             return null;
         }
         LoginUser.LoginUserBuilder builder = new LoginUser.LoginUserBuilder().username(username)
+                .userId(user.getId())
                 .password(user.getPassword())
                 .authorities(Arrays.asList(new SimpleGrantedAuthority("a")));
         return builder.build();
