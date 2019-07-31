@@ -9,16 +9,20 @@ dependencies {
     compile "org.hibernate:hibernate-validator"
     compile "org.hibernate:hibernate-entitymanager"
     compile "org.minjay.gamers:gamers-security:1.0.0"
+    compile "com.sun.mail:javax.mail"
     compile "org.hsqldb:hsqldb"
     compile "org.jadira.usertype:usertype.core:${usertypeVersion}"
     compile "com.fasterxml.jackson.core:jackson-databind"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-joda"
     compile "joda-time:joda-time"
+    compile "com.qcloud:cos_api:5.5.9"
     compile "com.google.guava:guava"
     compile('com.auth0:java-jwt:3.4.0')
     compile "org.apache.commons:commons-lang3"
     compile "javax.mail:mail:${javaMailVersion}"
     compile "org.freemarker:freemarker"
+
+    compileOnly "org.springframework.boot:spring-boot-configuration-processor"
 
     testCompile "junit:junit"
     testCompile "org.mockito:mockito-core"

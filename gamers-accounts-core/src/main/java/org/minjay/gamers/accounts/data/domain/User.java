@@ -12,6 +12,7 @@ public class User extends AbstractEntityAuditable<Long> {
     private String username;
     private String password;
 
+    private String headImage;
     private String phone;
     private String email;
 
@@ -46,6 +47,15 @@ public class User extends AbstractEntityAuditable<Long> {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Column(name = "head_image")
+    public String getHeadImage() {
+        return headImage;
+    }
+
+    public void setHeadImage(String headImage) {
+        this.headImage = headImage;
     }
 
     @Column(name = "phone", length = 255)

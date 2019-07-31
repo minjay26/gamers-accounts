@@ -1,21 +1,21 @@
 package org.minjay.gamers.accounts.resource.server.authentication;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.minjay.gamers.accounts.service.UserService;
+import org.minjay.gamers.security.userdetails.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.www.NonceExpiredException;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-import java.util.Calendar;
+import java.util.ArrayList;
+import java.util.Map;
 
 @Component
 public class JwtAuthenticationProvider implements AuthenticationProvider {
@@ -24,27 +24,27 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     RedisTemplate redisTemplate;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         DecodedJWT jwt = ((JwtAuthenticationToken) authentication).getToken();
-        if (jwt.getExpiresAt().before(Calendar.getInstance().getTime()))
-            throw new NonceExpiredException("Token expires");
-        String username = jwt.getSubject();
-        UserDetails user = userService.loadUserByUsername(username);
-        if (user == null)
-            throw new NonceExpiredException("Token expires");
+        String value = jwt.getSubject();
         try {
-            Algorithm algorithm = Algorithm.HMAC256("123456");
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .withSubject(username)
+            Map<String, Object> authenticationMap = objectMapper.readValue(value, Map.class);
+            LoginUser loginUser = new LoginUser.LoginUserBuilder()
+                    .userId(Long.parseLong(String.valueOf(authenticationMap.get("userId"))))
+                    .username((String) authenticationMap.get("username"))
+                    .password("PROTECT")
+                    .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList(StringUtils
+                            .collectionToCommaDelimitedString((ArrayList) authenticationMap.get("authorities"))))
                     .build();
-            verifier.verify(jwt.getToken());
+            authentication = new JwtAuthenticationToken(loginUser, jwt, null);
         } catch (Exception e) {
             throw new BadCredentialsException("JWT token verify fail", e);
         }
-        JwtAuthenticationToken token = new JwtAuthenticationToken(user, jwt, user.getAuthorities());
-        return token;
+        return authentication;
     }
 
     @Override

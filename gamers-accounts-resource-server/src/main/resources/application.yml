@@ -23,6 +23,24 @@ spring:
   redis:
     host: localhost
     port: 6379
+  mail:
+    host: smtp.163.com
+    username: minjay26@163.com
+    password: lz060213
+    default-encoding: UTF-8
+    port: 25
+
+email:
+  template:
+    bindEmail: 您本次操作的验证码为:<b>code<b>
+    modifyPassword: 您正在申请修改密码,验证码为:<b>code<b>
+
+qcloud:
+  appId: 1259754305
+  secretId: AKIDHJ9nIfjvrcBZq2HThjZDf4NVEl9NOpaF
+  secretKey: dkkZ7dLsHORJ0ALajDZkgpsVH2SDpeMu
+  bucket: gamers-1259754305
+  domain: https://gamers-1259754305.cos.ap-shanghai.myqcloud.com
 
 ---
 spring:

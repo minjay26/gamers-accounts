@@ -90,10 +90,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return daoProvider;
     }
 
-//    public UserDetailsService userDetailsService(UserService userService){
-//        return userService;
-//    }
-
     @Bean
     protected CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
