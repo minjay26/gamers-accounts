@@ -58,7 +58,9 @@ public class AccountController {
     @PostMapping("/upload_head_image")
     public ResponseEntity<String> uploadHeadImage(@RequestParam("file") MultipartFile file,
                                                   final @CurrentUser User user) {
-        String url = uploadManager.upload(file, user);
+        String url = uploadManager.upload(file);
+        user.setHeadImage(url);
+        userService.save(user);
         return ResponseEntity.ok(url);
     }
 }
