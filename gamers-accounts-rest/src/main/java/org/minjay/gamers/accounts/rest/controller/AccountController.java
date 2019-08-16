@@ -63,4 +63,10 @@ public class AccountController {
         userService.save(user);
         return ResponseEntity.ok(url);
     }
+
+    @PutMapping("/create_dynamic_action")
+    public ResponseEntity<Void> createDynamicAction(final @CurrentUser User user) {
+
+        return ResponseEntity.ok().build();
+    }
 }
