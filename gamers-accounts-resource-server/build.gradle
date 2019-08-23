@@ -21,6 +21,8 @@ dependencies {
     compile "org.springframework.security.oauth:spring-security-oauth2"
     compile "mysql:mysql-connector-java"
     compile "org.springframework.cloud:spring-cloud-starter-netflix-zuul"
+    compile "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery"
+    compile "com.alibaba.cloud:spring-cloud-starter-alibaba-sentinel"
 
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }

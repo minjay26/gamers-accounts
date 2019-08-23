@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: gamers-accounts
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848

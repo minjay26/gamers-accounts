@@ -3,6 +3,7 @@ package org.minjay.gamers.accounts.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.joda.time.DateTime;
 import org.minjay.gamers.security.userdetails.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,7 +56,7 @@ public class TokenServiceImpl implements TokenService {
         preCheck(loginUser);
 
         Algorithm algorithm = Algorithm.HMAC256(jwtSalt);
-        Date date = new Date(System.currentTimeMillis() + tokenTtl * 1000);
+        Date date = DateTime.now().plusYears(1).toDate();
         String jwt;
         try {
             jwt = JWT.create()
