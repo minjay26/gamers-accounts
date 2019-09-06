@@ -66,7 +66,7 @@ public class AccountController {
 
     @PutMapping("/create_dynamic_action")
     public ResponseEntity<Void> createDynamicAction(final @CurrentUser User user) {
-
+        userService.updateFromCreateDynamic(user);
         return ResponseEntity.ok().build();
     }
 }

@@ -111,4 +111,9 @@ public class UserServiceImpl extends EntityServiceSupport<User, Long, UserReposi
         getRepository().save(user);
     }
 
+    @Override
+    public void updateFromCreateDynamic(User user) {
+        user.setDynamicCount(user.getDynamicCount() + 1);
+        getRepository().save(user);
+    }
 }

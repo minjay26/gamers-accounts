@@ -44,14 +44,17 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         this.requiresAuthenticationRequestMatcher = new RequestHeaderRequestMatcher("x-auth-token");
     }
 
-    protected String getToken(HttpServletRequest request) {
-        return request.getHeader("x-auth-token");
+    protected String getTokenOrUserId(HttpServletRequest request) {
+        if (StringUtils.isNotBlank(request.getHeader("x-auth-token"))) {
+            return request.getHeader("x-auth-token");
+        }
+        return request.getParameter("userId");
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        if (!requiresAuthentication(request, response)) {
+        if (!requiresAuthentication(request, response) && !request.getParameterMap().containsKey("userId")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -59,7 +62,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         Authentication authResult = null;
         AuthenticationException failed = null;
         try {
-            String token = getToken(request);
+            String token = getTokenOrUserId(request);
             if (StringUtils.isNotBlank(token)) {
                 String jwt = tokenService.getJwt(token);
                 JwtAuthenticationToken authToken = new JwtAuthenticationToken(JWT.decode(jwt));

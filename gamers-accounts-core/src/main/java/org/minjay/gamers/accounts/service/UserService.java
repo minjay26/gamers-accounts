@@ -13,4 +13,6 @@ public interface UserService extends EntityService<User, Long>, UserDetailsServi
     void modifyPassword(User user, ModifyPasswordDto dto);
 
     void register(UserRegisterDto dto);
+
+    void updateFromCreateDynamic(User user);
 }

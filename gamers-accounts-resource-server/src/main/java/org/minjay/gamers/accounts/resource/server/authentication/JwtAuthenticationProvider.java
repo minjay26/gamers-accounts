@@ -2,7 +2,6 @@ package org.minjay.gamers.accounts.resource.server.authentication;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.minjay.gamers.accounts.service.UserService;
 import org.minjay.gamers.security.userdetails.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -22,8 +21,6 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
     RedisTemplate redisTemplate;
-    @Autowired
-    private UserService userService;
     @Autowired
     private ObjectMapper objectMapper;
 

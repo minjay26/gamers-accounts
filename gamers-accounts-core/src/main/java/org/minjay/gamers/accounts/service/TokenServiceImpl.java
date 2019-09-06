@@ -40,7 +40,12 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public String getJwt(String token) {
-        return redisTemplate.opsForValue().get(JWT_REDIS_KEY_PREFIX + token);
+        String jwt = redisTemplate.opsForValue().get(JWT_REDIS_KEY_PREFIX + token);
+        if (StringUtils.isEmpty(jwt)) {
+            String jwtKey = redisTemplate.opsForValue().get(TOKEN_REDIS_KEY_PREFIX + token);
+            jwt = redisTemplate.opsForValue().get(JWT_REDIS_KEY_PREFIX + jwtKey);
+        }
+        return jwt;
     }
 
     @Async
@@ -71,13 +76,13 @@ public class TokenServiceImpl implements TokenService {
         String key = "accounts:jwt:" + oldToken;
         valueOperations.set(key, jwt);
         redisTemplate.expireAt(key, date);
-        valueOperations.set(TOKEN_REDIS_KEY_PREFIX + loginUser.getUsername(), oldToken);
+        valueOperations.set(TOKEN_REDIS_KEY_PREFIX + loginUser.getUserId(), oldToken);
         return oldToken;
 
     }
 
     private void preCheck(LoginUser loginUser) {
-        String userTokenKey = TOKEN_REDIS_KEY_PREFIX + loginUser.getUsername();
+        String userTokenKey = TOKEN_REDIS_KEY_PREFIX + loginUser.getUserId();
         if (redisTemplate.hasKey(userTokenKey)) {
             String oldToken = valueOperations.get(userTokenKey);
             String jwtKey = JWT_REDIS_KEY_PREFIX + oldToken;

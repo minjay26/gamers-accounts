@@ -20,6 +20,8 @@ public class User extends AbstractEntityAuditable<Long> {
     private DateTime lastLoginDate;
     private String lastLoginIp;
 
+    private long dynamicCount;
+
     private boolean locked;
 
     private long version;
@@ -101,6 +103,15 @@ public class User extends AbstractEntityAuditable<Long> {
 
     public void setLastLoginIp(String lastLoginIp) {
         this.lastLoginIp = lastLoginIp;
+    }
+
+    @Column(name = "dynamic_count")
+    public long getDynamicCount() {
+        return dynamicCount;
+    }
+
+    public void setDynamicCount(long dynamicCount) {
+        this.dynamicCount = dynamicCount;
     }
 
     @Column(name = "locked", nullable = false)

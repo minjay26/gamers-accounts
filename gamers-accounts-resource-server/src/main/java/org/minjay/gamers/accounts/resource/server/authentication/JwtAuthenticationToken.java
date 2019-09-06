@@ -20,6 +20,11 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
         this.token = token;
     }
 
+    public JwtAuthenticationToken(UserDetails principal) {
+        super(Collections.emptyList());
+        this.principal = principal;
+    }
+
     public JwtAuthenticationToken(UserDetails principal, DecodedJWT token, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.principal = principal;
