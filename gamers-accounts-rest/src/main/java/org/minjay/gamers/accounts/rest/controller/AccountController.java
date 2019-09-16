@@ -26,10 +26,9 @@ public class AccountController {
     @Autowired
     public UploadManager uploadManager;
 
-    @PutMapping("/verification_code_apply")
+    @PostMapping("/verification_code_apply")
     public ResponseEntity<Void> sendVerificationCode(@Validated @RequestBody EmailVerificationCode verificationCode,
                                                      final @CurrentUser User user) {
-
         mailSender.send(verificationCode, user);
         return ResponseEntity.ok().build();
     }

@@ -40,6 +40,7 @@ spring:
 
 email:
   template:
+    login: 您本次登陆的验证码为:<b>code<b>
     bindEmail: 您本次操作的验证码为:<b>code<b>
     modifyPassword: 您正在申请修改密码,验证码为:<b>code<b>
 

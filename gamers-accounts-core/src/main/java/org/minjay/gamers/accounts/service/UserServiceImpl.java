@@ -10,7 +10,6 @@ import org.minjay.gamers.accounts.service.model.ModifyPasswordDto;
 import org.minjay.gamers.accounts.service.model.UserRegisterDto;
 import org.minjay.gamers.security.userdetails.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,15 +26,17 @@ import static org.minjay.gamers.accounts.mail.MailSendSupport.VERIFICATION_CODE_
 public class UserServiceImpl extends EntityServiceSupport<User, Long, UserRepository> implements UserService {
 
     private final ValueOperations<String, String> valueOperations;
-    private final RedisTemplate redisTemplate;
 
     @Autowired
     public UserServiceImpl(UserRepository repository,
-                           ValueOperations<String, String> valueOperations,
-                           RedisTemplate redisTemplate) {
+                           ValueOperations<String, String> valueOperations) {
         super(repository);
         this.valueOperations = valueOperations;
-        this.redisTemplate = redisTemplate;
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return getRepository().findByEmail(email);
     }
 
     @Override

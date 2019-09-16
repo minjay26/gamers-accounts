@@ -1,7 +1,9 @@
 package org.minjay.gamers.accounts.resource.server.authentication.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.minjay.gamers.accounts.resource.server.authentication.VCodeAuthenticationToken;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -18,9 +20,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Map;
 
-public class UsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class LoginAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    public UsernamePasswordAuthenticationFilter() {
+    public LoginAuthenticationFilter() {
         super(new AntPathRequestMatcher("/login", "POST"));
     }
 
@@ -40,11 +42,16 @@ public class UsernamePasswordAuthenticationFilter extends AbstractAuthentication
         }
 
         Map<String, String> map = new ObjectMapper().readValue(body, Map.class);
-        String username = map.get("username");
-        String password = map.get("password");
 
-        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
-                username, password);
+        AbstractAuthenticationToken authRequest;
+        if (map.containsKey("username")) {
+            String username = map.get("username");
+            String password = map.get("password");
+            authRequest = new UsernamePasswordAuthenticationToken(
+                    username, password);
+        } else {
+            authRequest = new VCodeAuthenticationToken(map.get("email"), map.get("vcode"));
+        }
         return this.getAuthenticationManager().authenticate(authRequest);
     }
 

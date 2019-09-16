@@ -1,9 +1,6 @@
 package org.minjay.gamers.accounts.resource.server.config;
 
-import org.minjay.gamers.accounts.resource.server.authentication.JwtAuthenticationProvider;
-import org.minjay.gamers.accounts.resource.server.authentication.LoginSuccessHandler;
-import org.minjay.gamers.accounts.resource.server.authentication.LogoutSuccessHandler;
-import org.minjay.gamers.accounts.resource.server.authentication.TokenRefreshSuccessHandler;
+import org.minjay.gamers.accounts.resource.server.authentication.*;
 import org.minjay.gamers.accounts.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +26,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
+                .antMatchers("/accounts/verification_code_apply").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable()
@@ -69,11 +67,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public JwtAuthenticationProvider jwtAuthenticationProvider;
     @Autowired
+    private VCodeAuthenticationProvider vCodeAuthenticationProvider;
+    @Autowired
     public UserService userService;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(daoAuthenticationProvider()).authenticationProvider(jwtAuthenticationProvider);
+        auth.authenticationProvider(daoAuthenticationProvider())
+                .authenticationProvider(jwtAuthenticationProvider)
+                .authenticationProvider(vCodeAuthenticationProvider);
     }
 
     @Bean

@@ -1,7 +1,7 @@
 package org.minjay.gamers.accounts.resource.server.config;
 
 import org.minjay.gamers.accounts.resource.server.authentication.LoginFailureHandler;
-import org.minjay.gamers.accounts.resource.server.authentication.filter.UsernamePasswordAuthenticationFilter;
+import org.minjay.gamers.accounts.resource.server.authentication.filter.LoginAuthenticationFilter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -11,10 +11,10 @@ import org.springframework.security.web.authentication.session.NullAuthenticated
 
 public class AuthenticationConfigurer<T extends AuthenticationConfigurer<T, B>, B extends HttpSecurityBuilder<B>> extends AbstractHttpConfigurer<T, B>  {
 
-	private UsernamePasswordAuthenticationFilter authFilter;
+	private LoginAuthenticationFilter authFilter;
 
 	public AuthenticationConfigurer() {
-		this.authFilter = new UsernamePasswordAuthenticationFilter();
+		this.authFilter = new LoginAuthenticationFilter();
 	}
 	
 	@Override
@@ -23,7 +23,7 @@ public class AuthenticationConfigurer<T extends AuthenticationConfigurer<T, B>, 
 		authFilter.setAuthenticationFailureHandler(new LoginFailureHandler());
 		authFilter.setSessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy());
 
-		UsernamePasswordAuthenticationFilter filter = postProcess(authFilter);
+		LoginAuthenticationFilter filter = postProcess(authFilter);
 		http.addFilterAfter(filter, LogoutFilter.class);
 	}
 	

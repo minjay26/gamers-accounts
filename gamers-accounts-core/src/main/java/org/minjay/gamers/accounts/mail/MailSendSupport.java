@@ -20,6 +20,7 @@ public class MailSendSupport implements MailSender {
     private static final String TEMPLATE_PREFIX = "email.template.";
 
     public static final String TEMPLATE_BIND_EMAIL = "bindEmail";
+    public static final String TEMPLATE_LOGIN_EMAIL = "login";
     public static final String TEMPLATE_MODIFY_PASSWORD = "modifyPassword";
 
     public static final String VERIFICATION_CODE_KEY_PREFIX = "verification:";
@@ -35,7 +36,7 @@ public class MailSendSupport implements MailSender {
 
     @Override
     public void send(EmailVerificationCode verificationCode, User user) {
-        if (!verificationCode.getType().equals(TEMPLATE_BIND_EMAIL) &&
+        if (!org.apache.commons.lang3.StringUtils.equalsAny(verificationCode.getType(), TEMPLATE_BIND_EMAIL, TEMPLATE_LOGIN_EMAIL) &&
                 !user.getEmail().equals(verificationCode.getEmail())) {
             throw new RuntimeException();
         }
@@ -44,6 +45,13 @@ public class MailSendSupport implements MailSender {
             User found = userRepository.findByEmail(verificationCode.getEmail());
             if (found != null) {
                 throw UserException.emailExistException();
+            }
+        }
+
+        if (verificationCode.getType().equals(TEMPLATE_LOGIN_EMAIL)) {
+            User found = userRepository.findByEmail(verificationCode.getEmail());
+            if (found == null) {
+                throw UserException.emailNotRegisterException();
             }
         }
 

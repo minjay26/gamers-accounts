@@ -7,6 +7,7 @@ public class UserException extends BasicErrorCodeException {
     private static final int EMAIL_EXIST_STATUS = 1003;
     private static final int MODIFY_PASSWORD_STATUS = 1003;
     private static final int USERNAME_EXIST_STATUS = 1004;
+    private static final int EMAIL_NOT_REGISTER = 1005;
 
     public UserException(int status) {
         super(status);
@@ -22,6 +23,10 @@ public class UserException extends BasicErrorCodeException {
 
     public static UserException emailExistException() {
         return new UserException(EMAIL_EXIST_STATUS);
+    }
+
+    public static UserException emailNotRegisterException() {
+        return new UserException(EMAIL_NOT_REGISTER);
     }
 
     public static UserException modifyPasswordFailedException() {
