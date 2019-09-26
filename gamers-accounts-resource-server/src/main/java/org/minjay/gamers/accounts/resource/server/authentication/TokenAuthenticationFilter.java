@@ -32,6 +32,7 @@ import java.util.List;
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private RequestMatcher requiresAuthenticationRequestMatcher;
+    private RequestMatcher requiresBeareTokenRequestMatcher;
     private List<RequestMatcher> permissiveRequestMatchers;
     private AuthenticationManager authenticationManager;
     @Autowired
@@ -42,6 +43,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     public TokenAuthenticationFilter() {
         this.requiresAuthenticationRequestMatcher = new RequestHeaderRequestMatcher("x-auth-token");
+        this.requiresBeareTokenRequestMatcher = new RequestHeaderRequestMatcher("Authorization");
     }
 
     protected String getTokenOrUserId(HttpServletRequest request) {
@@ -61,28 +63,34 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         Authentication authResult = null;
         AuthenticationException failed = null;
-        try {
-            String token = getTokenOrUserId(request);
-            if (StringUtils.isNotBlank(token)) {
-                String jwt = tokenService.getJwt(token);
+        String token = getTokenOrUserId(request);
+        String jwt;
+        if (StringUtils.isBlank(token)) {
+            jwt = request.getHeader("Authorization");
+        } else {
+            jwt = tokenService.getJwt(token);
+        }
+
+        if (StringUtils.isBlank(jwt)) {
+            failed = new InsufficientAuthenticationException("JWT is Empty");
+        } else {
+            try {
                 JwtAuthenticationToken authToken = new JwtAuthenticationToken(JWT.decode(jwt));
                 authResult = this.getAuthenticationManager().authenticate(authToken);
-            } else {
-                failed = new InsufficientAuthenticationException("JWT is Empty");
+            } catch (JWTDecodeException e) {
+                logger.error("JWT format error", e);
+                failed = new InsufficientAuthenticationException("JWT format error", failed);
+            } catch (InternalAuthenticationServiceException e) {
+                logger.error(
+                        "An internal error occurred while trying to authenticate the user.",
+                        failed);
+                failed = e;
+            } catch (AuthenticationException e) {
+                failed = e;
+            } catch (Exception e) {
+                unsuccessfulAuthentication(request, response, failed);
+                return;
             }
-        } catch (JWTDecodeException e) {
-            logger.error("JWT format error", e);
-            failed = new InsufficientAuthenticationException("JWT format error", failed);
-        } catch (InternalAuthenticationServiceException e) {
-            logger.error(
-                    "An internal error occurred while trying to authenticate the user.",
-                    failed);
-            failed = e;
-        } catch (AuthenticationException e) {
-            failed = e;
-        } catch (Exception e) {
-            unsuccessfulAuthentication(request, response, failed);
-            return;
         }
 
         if (authResult != null) {
@@ -119,7 +127,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     protected boolean requiresAuthentication(HttpServletRequest request,
                                              HttpServletResponse response) {
-        return requiresAuthenticationRequestMatcher.matches(request);
+        return requiresAuthenticationRequestMatcher.matches(request) || requiresBeareTokenRequestMatcher.matches(request);
     }
 
     protected boolean permissiveRequest(HttpServletRequest request) {
