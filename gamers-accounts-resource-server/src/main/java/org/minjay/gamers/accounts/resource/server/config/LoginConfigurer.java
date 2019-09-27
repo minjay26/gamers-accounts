@@ -13,7 +13,7 @@ public class LoginConfigurer<T extends LoginConfigurer<T, B>, B extends HttpSecu
 	private TokenAuthenticationFilter authFilter;
 	
 	public LoginConfigurer() {
-		this.authFilter = new TokenAuthenticationFilter();
+		this.authFilter = new TokenAuthenticationFilter("/accounts/verification_code_apply");
 	}
 	
 	@Override

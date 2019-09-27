@@ -1,6 +1,7 @@
 package org.minjay.gamers.accounts.rest.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import org.minjay.gamers.accounts.data.domain.User;
 import org.minjay.gamers.accounts.data.domain.UserFocus;
 import org.minjay.gamers.accounts.data.jackson.DataView;
 import org.minjay.gamers.accounts.service.UserFocusService;
@@ -28,5 +29,10 @@ public class UserController {
     @GetMapping("/{id}/focus")
     public ResponseEntity<List<UserFocus>> getFocus(@PathVariable("id") Long userId) {
         return ResponseEntity.ok(userFocusService.getAllFocus(userId));
+    }
+
+    @GetMapping("/{id}/username")
+    public ResponseEntity<String> getUsername(@PathVariable("id") User user) {
+        return ResponseEntity.ok(user.getUsername());
     }
 }

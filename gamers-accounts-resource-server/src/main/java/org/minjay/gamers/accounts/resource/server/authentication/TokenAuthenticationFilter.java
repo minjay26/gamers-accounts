@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.util.matcher.AndRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -33,6 +34,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private RequestMatcher requiresAuthenticationRequestMatcher;
     private RequestMatcher requiresBeareTokenRequestMatcher;
+    private RequestMatcher ignoreAuthenticationRequestMatcher;
     private List<RequestMatcher> permissiveRequestMatchers;
     private AuthenticationManager authenticationManager;
     @Autowired
@@ -41,9 +43,15 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
     private AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
 
-    public TokenAuthenticationFilter() {
+    public TokenAuthenticationFilter(String... noRequireAuthenticationPath) {
         this.requiresAuthenticationRequestMatcher = new RequestHeaderRequestMatcher("x-auth-token");
         this.requiresBeareTokenRequestMatcher = new RequestHeaderRequestMatcher("Authorization");
+
+        List<RequestMatcher> matchers = new ArrayList<>();
+        for (String path : noRequireAuthenticationPath) {
+            matchers.add(new AntPathRequestMatcher(path));
+        }
+        this.ignoreAuthenticationRequestMatcher = new AndRequestMatcher(matchers);
     }
 
     protected String getTokenOrUserId(HttpServletRequest request) {
@@ -56,7 +64,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        if (!requiresAuthentication(request, response) && !request.getParameterMap().containsKey("userId")) {
+        if (!requiresAuthentication(request, response)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -127,7 +135,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     protected boolean requiresAuthentication(HttpServletRequest request,
                                              HttpServletResponse response) {
-        return requiresAuthenticationRequestMatcher.matches(request) || requiresBeareTokenRequestMatcher.matches(request);
+        if (ignoreAuthenticationRequestMatcher.matches(request)) {
+            return false;
+        }
+        return requiresAuthenticationRequestMatcher.matches(request) || requiresBeareTokenRequestMatcher.matches(request)
+                || request.getParameterMap().containsKey("userId");
     }
 
     protected boolean permissiveRequest(HttpServletRequest request) {

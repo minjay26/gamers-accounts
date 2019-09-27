@@ -72,7 +72,7 @@ public class MailSendSupport implements MailSender {
         } catch (MessagingException ex) {
         }
         mailSender.send(messageHelper.getMimeMessage());
-        valueOperations.set(verificationCodeKey, code, 60, TimeUnit.MINUTES);
+        valueOperations.set(verificationCodeKey, code, 60, TimeUnit.SECONDS);
     }
 
     private String getTemplate(String templateKey, String code) {
